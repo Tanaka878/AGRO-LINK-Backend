@@ -5,6 +5,15 @@ public class AuthenticationResponse {
 
     private String token;
     private String username;
+    private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public String getToken() {
         return token;

@@ -5,9 +5,12 @@ import com.tanaka.template.dto.AuthRequest;
 import com.tanaka.template.dto.AuthenticationResponse;
 import com.tanaka.template.dto.Role;
 import com.tanaka.template.dto.SignUpDTO;
+import com.tanaka.template.entity.Customer;
 import com.tanaka.template.entity.User;
 import com.tanaka.template.repository.UserRepository;
 import com.tanaka.template.service.UserService;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@Slf4j
+@Builder
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -38,7 +43,7 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.badRequest().build();
         }
 
-        var newAccount = new User();
+        var newAccount = new Customer();
         newAccount.setEmail(user.getEmail());
         newAccount.setGender(user.getGender());
         newAccount.setFullname(user.getFullname());
@@ -60,7 +65,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<AuthenticationResponse> authenticateUser(AuthRequest authRequest) {
-        return null;
+
+        var authenticationResponse = new AuthenticationResponse();
+
+
+
+        Optional<User> byEmail = userRepository.findByEmail(authRequest.getEmail());
+
+        if (byEmail.isPresent()){
+            if (passwordEncoder.matches(authRequest.getPassword(), byEmail.get().getPassword())){
+                String token = jwtService.generateToken(byEmail.get());
+                authenticationResponse.setToken(token);
+                authenticationResponse.setRole(byEmail.get().getRole());
+                authenticationResponse.setUsername(authRequest.getEmail());
+
+                return ResponseEntity.ok(authenticationResponse);
+            }
+            else {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        return ResponseEntity.badRequest().build();
+
     }
 
 
