@@ -1,14 +1,12 @@
 package com.tanaka.template.serviceImpl;
 
 import com.tanaka.template.config.JWTService;
-import com.tanaka.template.dto.AuthRequest;
-import com.tanaka.template.dto.AuthenticationResponse;
-import com.tanaka.template.dto.Role;
-import com.tanaka.template.dto.SignUpDTO;
+import com.tanaka.template.dto.*;
 import com.tanaka.template.entity.Customer;
 import com.tanaka.template.entity.User;
 import com.tanaka.template.repository.UserRepository;
 import com.tanaka.template.service.UserService;
+import com.tanaka.template.util.MailSenderService;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +24,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
+    private final MailSenderService mailSenderService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JWTService jwtService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JWTService jwtService, MailSenderService mailSenderService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.mailSenderService = mailSenderService;
     }
 
     @Override
@@ -58,6 +58,13 @@ public class UserServiceImpl implements UserService {
         var authResponse = new AuthenticationResponse();
         authResponse.setToken(token);
         authResponse.setUsername(user.getUsername());
+
+        var account = new AccountCreationNotification();
+        account.setRole(user.getRole());
+        account.setName(user.getFullname());
+        account.setEmail(user.getEmail());
+
+        mailSenderService.sendAccountCreationNotification(account);
 
 
         return ResponseEntity.ok().body(authResponse);
