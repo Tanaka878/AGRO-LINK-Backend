@@ -6,6 +6,15 @@ public class AuthenticationResponse {
     private String token;
     private String username;
     private Role role;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Role getRole() {
         return role;

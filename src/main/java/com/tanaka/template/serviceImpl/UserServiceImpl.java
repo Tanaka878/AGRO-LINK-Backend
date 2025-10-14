@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService {
                 authenticationResponse.setToken(token);
                 authenticationResponse.setRole(byEmail.get().getRole());
                 authenticationResponse.setUsername(authRequest.getEmail());
+                authenticationResponse.setName(byEmail.get().getFullname());
 
                 return ResponseEntity.ok(authenticationResponse);
             }
