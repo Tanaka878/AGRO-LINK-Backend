@@ -66,10 +66,11 @@ public class FarmerController {
         return ResponseEntity.ok(orders);
     }
 
-    @PostMapping("/farmer/statistics/{email}")
-    public ResponseEntity<FarmerStatistics> getStatistics(@PathVariable String email){
-        return farmerService.getStatistics(email);
-
+    @GetMapping("/statistics/{email}")
+    public ResponseEntity<FarmerStatistics> getStatistics(@PathVariable String email) {
+        FarmerStatistics stats = farmerService.getStatistics(email).getBody();
+        return ResponseEntity.ok(stats);
     }
+
 
 }

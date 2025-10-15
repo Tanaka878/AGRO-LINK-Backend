@@ -25,6 +25,10 @@ public class Order {
 
     private Integer quantity;
 
+    private Double pricePerUnit;
+
+    private Double totalPrice;
+
     private String farmerEmail;
 
     private String buyerName;
@@ -33,5 +37,11 @@ public class Order {
     private OrderStatus status; // PENDING or COLLECTED
 
     private LocalDateTime orderTime = LocalDateTime.now();
-}
 
+    @PrePersist
+    public void calculateTotal() {
+        if (pricePerUnit != null && quantity != null) {
+            this.totalPrice = pricePerUnit * quantity;
+        }
+    }
+}

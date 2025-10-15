@@ -4,6 +4,7 @@ import com.tanaka.template.dto.FarmerRegistrationDTO;
 import com.tanaka.template.dto.FarmerStatistics;
 import com.tanaka.template.dto.Role;
 import com.tanaka.template.entity.Farmer;
+import com.tanaka.template.entity.ListedProducts;
 import com.tanaka.template.entity.Order;
 import com.tanaka.template.repository.FarmerRepository;
 import com.tanaka.template.service.FarmerService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -72,14 +74,27 @@ public class FarmerServiceImpl implements FarmerService {
 
     @Override
     public ResponseEntity<FarmerStatistics> getStatistics(String email) {
-        var statistics = new FarmerStatistics();
-        List<Order> ordersForFarmer = orderService.getOrdersForFarmer(email);
-        long pendingOrders = ordersForFarmer == null ? 0 :
-                ordersForFarmer.stream()
-                        .filter(order -> "PENDING".equals(order.getStatus()))
-                        .count();
-        statistics.setPendingOrders(pendingOrders);
+        FarmerStatistics statistics = new FarmerStatistics();
 
-        return null;
+        List<Order> ordersForFarmer = orderService.getOrdersForFarmer(email);
+        if (ordersForFarmer == null) {
+            ordersForFarmer = new ArrayList<>();
+        }
+
+        long pendingOrders = ordersForFarmer.stream().filter(o -> "PENDING".equals(o.getStatus())).count();
+        long completedOrders = ordersForFarmer.stream().filter(o -> "COMPLETED".equals(o.getStatus())).count();
+        long cancelledOrders = ordersForFarmer.stream().filter(o -> "CANCELLED".equals(o.getStatus())).count();
+
+        statistics.setPendingOrders(pendingOrders);
+        statistics.setCompletedOrders(completedOrders);
+        statistics.setCancelledOrders(cancelledOrders);
+
+        // You already have listed products logic — keep it
+        List<ListedProducts> listedProducts = listedProductsService.getProductsByFarmer(email);
+        statistics.setListedProducts(listedProducts.size());
+
+        return ResponseEntity.ok(statistics);
     }
+
+
 }

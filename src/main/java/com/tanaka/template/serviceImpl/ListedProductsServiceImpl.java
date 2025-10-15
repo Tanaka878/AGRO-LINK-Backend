@@ -3,6 +3,7 @@ package com.tanaka.template.serviceImpl;
 import com.tanaka.template.entity.ListedProducts;
 import com.tanaka.template.repository.ListedProductsRepository;
 import com.tanaka.template.service.ListedProductsService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +18,10 @@ public class ListedProductsServiceImpl implements ListedProductsService {
     }
 
     @Override
+    @Transactional
     public ListedProducts addProduct(ListedProducts product) {
+        System.out.println("****** adding product to repository");
+        System.out.println(product);
         return listedProductsRepository.save(product);
     }
 

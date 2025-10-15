@@ -18,9 +18,9 @@ public class ListedProducts {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String productType;  // e.g., Maize, Tomato
+    private String productType;
 
-    private Integer quantity;    // Quantity available
+    private Integer quantity;
 
-    private String farmerEmail;  // Farmer who listed the product
+    private String farmerEmail;
 }

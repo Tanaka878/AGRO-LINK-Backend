@@ -5,5 +5,8 @@ import lombok.Data;
 @Data
 public class FarmerStatistics {
     private long pendingOrders;
-    private long listedProducts;
+    private long completedOrders;
+    private long cancelledOrders;
+    private int listedProducts;
+
 }
