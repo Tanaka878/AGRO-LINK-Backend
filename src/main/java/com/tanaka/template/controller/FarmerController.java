@@ -1,6 +1,7 @@
 package com.tanaka.template.controller;
 
 import com.tanaka.template.dto.FarmerRegistrationDTO;
+import com.tanaka.template.dto.FarmerStatistics;
 import com.tanaka.template.entity.Farmer;
 import com.tanaka.template.entity.PendingOrder;
 import com.tanaka.template.repository.FarmerRepository;
@@ -63,6 +64,12 @@ public class FarmerController {
 
         List<PendingOrder> orders = pendingOrderService.getPendingOrdersForFarmer(farmerOptional.get());
         return ResponseEntity.ok(orders);
+    }
+
+    @PostMapping("/farmer/statistics/{email}")
+    public ResponseEntity<FarmerStatistics> getStatistics(@PathVariable String email){
+        return farmerService.getStatistics(email);
+
     }
 
 }

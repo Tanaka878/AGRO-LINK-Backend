@@ -1,22 +1,32 @@
 package com.tanaka.template.serviceImpl;
 
 import com.tanaka.template.dto.FarmerRegistrationDTO;
+import com.tanaka.template.dto.FarmerStatistics;
 import com.tanaka.template.dto.Role;
 import com.tanaka.template.entity.Farmer;
+import com.tanaka.template.entity.Order;
 import com.tanaka.template.repository.FarmerRepository;
 import com.tanaka.template.service.FarmerService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FarmerServiceImpl implements FarmerService {
 
     private final FarmerRepository farmerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ListedProductsServiceImpl listedProductsService;
+    private final OrderServiceImpl orderService;
 
-    public FarmerServiceImpl(FarmerRepository farmerRepository, PasswordEncoder passwordEncoder) {
+    public FarmerServiceImpl(FarmerRepository farmerRepository, PasswordEncoder passwordEncoder, ListedProductsServiceImpl listedProductsService,
+                             OrderServiceImpl orderService) {
         this.farmerRepository = farmerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.listedProductsService = listedProductsService;
+        this.orderService = orderService;
     }
 
     @Override
@@ -56,5 +66,20 @@ public class FarmerServiceImpl implements FarmerService {
     public Farmer getFarmerByEmail(String email) {
         return farmerRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Farmer not found with email: " + email));
+    }
+
+
+
+    @Override
+    public ResponseEntity<FarmerStatistics> getStatistics(String email) {
+        var statistics = new FarmerStatistics();
+        List<Order> ordersForFarmer = orderService.getOrdersForFarmer(email);
+        long pendingOrders = ordersForFarmer == null ? 0 :
+                ordersForFarmer.stream()
+                        .filter(order -> "PENDING".equals(order.getStatus()))
+                        .count();
+        statistics.setPendingOrders(pendingOrders);
+
+        return null;
     }
 }
