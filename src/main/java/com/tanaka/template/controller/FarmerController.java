@@ -31,12 +31,7 @@ public class FarmerController {
         return new ResponseEntity<>(savedFarmer, HttpStatus.CREATED);
     }
 
-    // Fetch farmer by email
-    @GetMapping("/{email}")
-    public ResponseEntity<Farmer> getFarmer(@PathVariable String email) {
-        Farmer farmer = farmerService.getFarmerByEmail(email);
-        return ResponseEntity.ok(farmer);
-    }
+
 
     @PostMapping("/create/{farmerId}")
     public ResponseEntity<PendingOrder> createOrder(@PathVariable Long farmerId, @RequestBody PendingOrder order) {
@@ -70,6 +65,11 @@ public class FarmerController {
     public ResponseEntity<FarmerStatistics> getStatistics(@PathVariable String email) {
         FarmerStatistics stats = farmerService.getStatistics(email).getBody();
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/getByEmail/{email}")
+    public Farmer getFarmerByEmail(@PathVariable String email) {
+        return farmerService.getFarmerByEmail(email);
     }
 
 

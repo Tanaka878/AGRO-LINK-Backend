@@ -1,5 +1,6 @@
 package com.tanaka.template.serviceImpl;
 
+import com.tanaka.template.dto.OrderStatus;
 import com.tanaka.template.entity.Order;
 import com.tanaka.template.repository.OrderRepository;
 import com.tanaka.template.service.OrderService;
@@ -38,5 +39,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+
+    @Override
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+        order.setStatus(status);
+        return orderRepository.save(order);
     }
 }

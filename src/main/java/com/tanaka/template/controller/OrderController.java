@@ -1,6 +1,7 @@
 package com.tanaka.template.controller;
 
 import com.tanaka.template.dto.FarmerRequest;
+import com.tanaka.template.dto.OrderStatus;
 import com.tanaka.template.entity.Order;
 import com.tanaka.template.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -37,4 +38,11 @@ public class OrderController {
         List<Order> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
     }
+
+    @PutMapping("/update-status/{orderId}")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long orderId, @RequestParam OrderStatus status) {
+        Order updatedOrder = orderService.updateOrderStatus(orderId, status);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
 }

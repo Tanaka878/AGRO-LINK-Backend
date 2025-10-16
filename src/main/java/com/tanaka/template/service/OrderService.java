@@ -1,5 +1,6 @@
 package com.tanaka.template.service;
 
+import com.tanaka.template.dto.OrderStatus;
 import com.tanaka.template.entity.Order;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface OrderService {
     List<Order> getOrdersForFarmer(String farmerEmail);
 
     List<Order> getAllOrders();
+
+    Order updateOrderStatus(Long orderId, OrderStatus status);
 }

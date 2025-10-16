@@ -10,4 +10,5 @@ public interface FarmerService {
     Farmer getFarmerByEmail(String email);
 
     ResponseEntity<FarmerStatistics> getStatistics(String email);
+
 }
