@@ -1,6 +1,8 @@
 package com.tanaka.template.util;
 
 import com.tanaka.template.dto.AccountCreationNotification;
+import com.tanaka.template.entity.ListedProducts;
+import com.tanaka.template.entity.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,5 +139,26 @@ public class MailSenderService {
             logger.error("Failed to send email to {}: {}", to, e.getMessage());
             throw new RuntimeException("Failed to send email", e);
         }
+    }
+
+
+
+    public void sendListingEmailToFarmer(ListedProducts product) {
+        String to = product.getFarmerEmail();
+        String subject = "PRODUCT LISTING NOTIFICATION";
+        String text = "You have just listed the crop : " + product.getProductType() +"\n" +"Quantity :" + product.getQuantity();
+        sendEmail(to,subject,text);
+    }
+
+    public void farmerOrderCreationNotification(Order order) {
+        String to = order.getFarmerEmail();
+        String subject = "ORDER CREATION FROM LISTED PRODUCT";
+        String text = "An order was just created for you listed :" + order.getProductType() + "\n" +" of quantity : " + order.getQuantity();
+        sendEmail(to, subject, text);
+    }
+
+    public void customerOrderCreationNotification(Order order) {
+        String to = order.getBuyerEmail();
+        String subject  = "You just created an order for :" + order.getProductType() + " of quantity :" + order.getQuantity();
     }
 }

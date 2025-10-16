@@ -31,7 +31,7 @@ public class Order {
 
     private String farmerEmail;
 
-    private String buyerName;
+    private String buyerEmail;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status; // PENDING or COLLECTED
