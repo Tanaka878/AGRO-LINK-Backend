@@ -49,4 +49,9 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status);
         return orderRepository.save(order);
     }
+
+    public List<Order> getOrdersByBuyerEmail(String buyerEmail) {
+        return orderRepository.findByBuyerEmail(buyerEmail);
+    }
+
 }

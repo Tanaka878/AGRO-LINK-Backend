@@ -44,5 +44,21 @@ public class OrderController {
         Order updatedOrder = orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok(updatedOrder);
     }
+    @GetMapping("/buyer/{email}")
+    public ResponseEntity<List<Order>> getOrdersByBuyerEmail(@PathVariable String email) {
+        List<Order> orders = orderService.getOrdersByBuyerEmail(email);
+        if (orders.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(orders);
+    }
+
+    @PutMapping("/cancel/{orderId}")
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
+        Order cancelledOrder = orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
+        return ResponseEntity.ok(cancelledOrder);
+    }
+
+
 
 }

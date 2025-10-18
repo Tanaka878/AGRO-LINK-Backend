@@ -71,10 +71,9 @@ public class FarmerServiceImpl implements FarmerService {
                 .orElseThrow(() -> new IllegalArgumentException("Farmer not found with email: " + email));
     }
 
-
-
     @Override
     public ResponseEntity<FarmerStatistics> getStatistics(String email) {
+        System.out.println("Statistics endpoint hit ");
         FarmerStatistics statistics = new FarmerStatistics();
 
         List<Order> ordersForFarmer = orderService.getOrdersForFarmer(email);
@@ -82,9 +81,17 @@ public class FarmerServiceImpl implements FarmerService {
             ordersForFarmer = new ArrayList<>();
         }
 
-        long pendingOrders = ordersForFarmer.stream().filter(o -> "PENDING".equals(o.getStatus())).count();
-        long completedOrders = ordersForFarmer.stream().filter(o -> "COMPLETED".equals(o.getStatus())).count();
-        long cancelledOrders = ordersForFarmer.stream().filter(o -> "CANCELLED".equals(o.getStatus())).count();
+        long pendingOrders = ordersForFarmer.stream()
+                .filter(o -> o.getStatus() == OrderStatus.PENDING)
+                .count();
+
+        long completedOrders = ordersForFarmer.stream()
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED)
+                .count();
+
+        long cancelledOrders = ordersForFarmer.stream()
+                .filter(o -> o.getStatus() == OrderStatus.CANCELLED)
+                .count();
 
         statistics.setPendingOrders(pendingOrders);
         statistics.setCompletedOrders(completedOrders);
@@ -93,6 +100,9 @@ public class FarmerServiceImpl implements FarmerService {
         // You already have listed products logic — keep it
         List<ListedProductsDTO> listedProducts = listedProductsService.getAllListedProductsWithComments();
         statistics.setListedProducts(listedProducts.size());
+
+        System.out.println("Orders fetched for " + email + ": " + ordersForFarmer.size());
+
 
         return ResponseEntity.ok(statistics);
     }
