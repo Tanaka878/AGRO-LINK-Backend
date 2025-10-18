@@ -1,5 +1,6 @@
 package com.tanaka.template.controller;
 
+import com.tanaka.template.dto.ListedProductsDTO;
 import com.tanaka.template.entity.ListedProducts;
 import com.tanaka.template.service.ListedProductsService;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,8 @@ public class ListedProductsController {
 
     // Get all listed products
     @GetMapping("/all")
-    public ResponseEntity<List<ListedProducts>> getAllProducts() {
-        List<ListedProducts> products = listedProductsService.getAllProducts();
+    public ResponseEntity<List<ListedProductsDTO>> getAllProducts() {
+        List<ListedProductsDTO> products = listedProductsService.getAllListedProductsWithComments();
         return ResponseEntity.ok(products);
     }
 

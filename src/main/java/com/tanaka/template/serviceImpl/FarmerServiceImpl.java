@@ -1,8 +1,7 @@
 package com.tanaka.template.serviceImpl;
 
-import com.tanaka.template.dto.FarmerRegistrationDTO;
-import com.tanaka.template.dto.FarmerStatistics;
-import com.tanaka.template.dto.Role;
+import com.tanaka.template.dto.*;
+import com.tanaka.template.entity.Comment;
 import com.tanaka.template.entity.Farmer;
 import com.tanaka.template.entity.ListedProducts;
 import com.tanaka.template.entity.Order;
@@ -12,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FarmerServiceImpl implements FarmerService {
@@ -90,12 +91,36 @@ public class FarmerServiceImpl implements FarmerService {
         statistics.setCancelledOrders(cancelledOrders);
 
         // You already have listed products logic — keep it
-        List<ListedProducts> listedProducts = listedProductsService.getProductsByFarmer(email);
+        List<ListedProductsDTO> listedProducts = listedProductsService.getAllListedProductsWithComments();
         statistics.setListedProducts(listedProducts.size());
 
         return ResponseEntity.ok(statistics);
     }
 
+    public ResponseEntity<String> addCommentForFarmer(String farmerEmail, CommentDTO dto) {
+        Optional<Farmer> farmerOptional = farmerRepository.findByEmail(farmerEmail);
+
+        if (farmerOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Farmer farmer = farmerOptional.get();
+
+        Comment comment = Comment.builder()
+                .authorName(dto.getAuthorName())
+                .content(dto.getContent())
+                .createdAt(LocalDateTime.now())
+                .farmer(farmer)
+                .build();
+
+        // Add comment directly to farmer's list
+        farmer.getComments().add(comment);
+
+        // Save farmer, cascading persists the comment
+        farmerRepository.save(farmer);
+
+        return ResponseEntity.ok("Comment saved");
+    }
 
 
 

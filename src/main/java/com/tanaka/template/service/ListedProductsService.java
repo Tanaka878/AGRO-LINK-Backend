@@ -1,5 +1,6 @@
 package com.tanaka.template.service;
 
+import com.tanaka.template.dto.ListedProductsDTO;
 import com.tanaka.template.entity.ListedProducts;
 
 import java.util.List;
@@ -10,8 +11,9 @@ public interface ListedProductsService {
     ListedProducts addProduct(ListedProducts product);
 
     // Get all listed products
-    List<ListedProducts> getAllProducts();
+    List<ListedProductsDTO> getAllProducts();
 
     // Get products by a specific farmer
     List<ListedProducts> getProductsByFarmer(String farmerEmail);
+    public List<ListedProductsDTO> getAllListedProductsWithComments();
 }

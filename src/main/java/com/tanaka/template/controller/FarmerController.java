@@ -1,5 +1,6 @@
 package com.tanaka.template.controller;
 
+import com.tanaka.template.dto.CommentDTO;
 import com.tanaka.template.dto.FarmerRegistrationDTO;
 import com.tanaka.template.dto.FarmerStatistics;
 import com.tanaka.template.entity.Farmer;
@@ -72,5 +73,16 @@ public class FarmerController {
         return farmerService.getFarmerByEmail(email);
     }
 
+
+    @PostMapping("/{email}/addComment")
+    public ResponseEntity<String> addCommentForFarmer(
+
+            @PathVariable String email,
+            @RequestBody CommentDTO commentDTO
+    ) {
+
+        System.out.println("Adding comment ");
+        return farmerService.addCommentForFarmer(email, commentDTO);
+    }
 
 }
