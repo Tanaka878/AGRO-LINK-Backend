@@ -6,14 +6,15 @@ import com.tanaka.template.entity.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 @Service
@@ -33,33 +34,42 @@ public class MailSenderService {
      * @param name Name of the recipient
      * @param password Initial password for the account
      */
-    public void sendWelcomeEmail(String to, String name, String password) {
-        String subject = "Welcome to JoinAI Support Platform";
-        String text = "Hello " + name + ",\n\n" +
-                "Welcome to the JoinAI Support Platform. Your account has been created successfully.\n\n" +
-                "Your login credentials:\n" +
-                "Email: " + to + "\n" +
-                "Password: " + password + "\n\n" +
-                "Please change your password after the first login.\n\n" +
-                "Best Regards,\nThe JoinAI Support Team";
+    @Async
+    public CompletableFuture<Void> sendWelcomeEmail(String to, String name, String password) {
+        try {
+            String subject = "Welcome to JoinAI Support Platform";
+            String text = "Hello " + name + ",\n\n" +
+                    "Welcome to the JoinAI Support Platform. Your account has been created successfully.\n\n" +
+                    "Your login credentials:\n" +
+                    "Email: " + to + "\n" +
+                    "Password: " + password + "\n\n" +
+                    "Please change your password after the first login.\n\n" +
+                    "Best Regards,\nThe JoinAI Support Team";
 
-        sendEmail(to, subject, text);
+            sendEmail(to, subject, text);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.error("Failed to send welcome email to: {}", to, e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void sendAccountCreationNotification(AccountCreationNotification notification) {
-        String subject = "Account Creation Notification";
-        String text = "Hello " + notification.getName() + ",\n\n" +
-                "Your account has been sucessfully created with AGROLINK:\n\n" +
+    @Async
+    public CompletableFuture<Void> sendAccountCreationNotification(AccountCreationNotification notification) {
+        try {
+            String subject = "Account Creation Notification";
+            String text = "Hello " + notification.getName() + ",\n\n" +
+                    "Your account has been successfully created with AGROLINK:\n\n" +
+                    "Please log in to the platform to view the account profile and update it.\n\n" +
+                    "Happy Farming,\nThe AGROLINK Support Team";
 
-                "Please log in to the  platform to view the account profile and update it.\n\n" +
-                "Happy Farming,\nThe AGROLINK Support Team";
-
-        sendEmail(notification.getEmail(), subject, text);
+            sendEmail(notification.getEmail(), subject, text);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.error("Failed to send account creation notification to: {}", notification.getEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
-
-
-
-
 
     private String formatTimestamp(Object timestamp) {
         try {
@@ -85,19 +95,26 @@ public class MailSenderService {
      * @param otp One-time password for resetting the password
      * @param email Email address of the recipient
      */
-    public void sendPasswordResetEmail(String otp, String email) {
-        String subject = "Password Reset Request - JoinAI Support Platform";
-        String text = "Hello,\n\n" +
-                "We received a request to reset your password for your JoinAI Support Platform account.\n\n" +
-                "Your one-time password (OTP) for password reset is: " + otp + "\n\n" +
-                "Please note that this OTP will expire in 15 minutes for security purposes.\n\n" +
-                "If you did not request a password reset, please ignore this email or contact our support team immediately.\n\n" +
-                "For your security, never share this OTP with anyone.\n\n" +
-                "Best regards,\n" +
-                "The JoinAI Support Team\n" +
-                "support@joinai.com";
+    @Async
+    public CompletableFuture<Void> sendPasswordResetEmail(String otp, String email) {
+        try {
+            String subject = "Password Reset Request - JoinAI Support Platform";
+            String text = "Hello,\n\n" +
+                    "We received a request to reset your password for your JoinAI Support Platform account.\n\n" +
+                    "Your one-time password (OTP) for password reset is: " + otp + "\n\n" +
+                    "Please note that this OTP will expire in 15 minutes for security purposes.\n\n" +
+                    "If you did not request a password reset, please ignore this email or contact our support team immediately.\n\n" +
+                    "For your security, never share this OTP with anyone.\n\n" +
+                    "Best regards,\n" +
+                    "The JoinAI Support Team\n" +
+                    "support@joinai.com";
 
-        sendEmail(email, subject, text);
+            sendEmail(email, subject, text);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.error("Failed to send password reset email to: {}", email, e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
     /**
@@ -137,28 +154,53 @@ public class MailSenderService {
             logger.info("Email sent successfully to {}", to);
         } catch (MailException e) {
             logger.error("Failed to send email to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send email", e);
+            // Don't throw exception here - just log it since this is async
         }
     }
 
-
-
-    public void sendListingEmailToFarmer(ListedProducts product) {
-        String to = product.getFarmerEmail();
-        String subject = "PRODUCT LISTING NOTIFICATION";
-        String text = "You have just listed the crop : " + product.getProductType() +"\n" +"Quantity :" + product.getQuantity();
-        sendEmail(to,subject,text);
+    @Async
+    public CompletableFuture<Void> sendListingEmailToFarmer(ListedProducts product) {
+        try {
+            String to = product.getFarmerEmail();
+            String subject = "PRODUCT LISTING NOTIFICATION";
+            String text = "You have just listed the crop : " + product.getProductType() + "\n" + "Quantity :" + product.getQuantity();
+            sendEmail(to, subject, text);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.error("Failed to send listing email to farmer: {}", product.getFarmerEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void farmerOrderCreationNotification(Order order) {
-        String to = order.getFarmerEmail();
-        String subject = "ORDER CREATION FROM LISTED PRODUCT";
-        String text = "An order was just created for you listed :" + order.getProductType() + "\n" +" of quantity : " + order.getQuantity();
-        sendEmail(to, subject, text);
+    @Async
+    public CompletableFuture<Void> farmerOrderCreationNotification(Order order) {
+        try {
+            String to = order.getFarmerEmail();
+            String subject = "ORDER CREATION FROM LISTED PRODUCT";
+            String text = "An order was just created for you listed :" + order.getProductType() + "\n" + " of quantity : " + order.getQuantity();
+            sendEmail(to, subject, text);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.error("Failed to send order creation notification to farmer: {}", order.getFarmerEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
-    public void customerOrderCreationNotification(Order order) {
-        String to = order.getBuyerEmail();
-        String subject  = "You just created an order for :" + order.getProductType() + " of quantity :" + order.getQuantity();
+    @Async
+    public CompletableFuture<Void> customerOrderCreationNotification(Order order) {
+        try {
+            String to = order.getBuyerEmail();
+            String subject = "You just created an order for :" + order.getProductType() + " of quantity :" + order.getQuantity();
+            String text = "Your order has been created successfully.\n\n" +
+                    "Product: " + order.getProductType() + "\n" +
+                    "Quantity: " + order.getQuantity() + "\n" +
+                    "Total Price: $" + order.getTotalPrice() + "\n\n" +
+                    "Thank you for your order!";
+            sendEmail(to, subject, text);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.error("Failed to send order creation notification to customer: {}", order.getBuyerEmail(), e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 }

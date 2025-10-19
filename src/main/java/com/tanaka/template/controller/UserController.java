@@ -2,6 +2,7 @@ package com.tanaka.template.controller;
 
 import com.tanaka.template.dto.AuthRequest;
 import com.tanaka.template.dto.AuthenticationResponse;
+import com.tanaka.template.dto.PasswordResetRequest;
 import com.tanaka.template.dto.SignUpDTO;
 import com.tanaka.template.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +33,8 @@ public class UserController {
         return userService.authenticateUser(authRequest);
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest request) {
+        return userService.resetPassword(request);
+    }
 }
