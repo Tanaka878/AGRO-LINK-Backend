@@ -2,6 +2,7 @@ package com.tanaka.template.controller;
 
 import com.tanaka.template.dto.FarmerRequest;
 import com.tanaka.template.dto.OrderStatus;
+import com.tanaka.template.dto.PaymentStatus;
 import com.tanaka.template.entity.Order;
 import com.tanaka.template.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,6 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
@@ -44,6 +44,13 @@ public class OrderController {
         Order updatedOrder = orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok(updatedOrder);
     }
+
+    @PutMapping("/update-payment-status/{orderId}")
+    public ResponseEntity<Order> updatePaymentStatus(@PathVariable Long orderId, @RequestParam PaymentStatus paymentStatus) {
+        Order updatedOrder = orderService.updatePaymentStatus(orderId, paymentStatus);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
     @GetMapping("/buyer/{email}")
     public ResponseEntity<List<Order>> getOrdersByBuyerEmail(@PathVariable String email) {
         List<Order> orders = orderService.getOrdersByBuyerEmail(email);
@@ -59,6 +66,9 @@ public class OrderController {
         return ResponseEntity.ok(cancelledOrder);
     }
 
-
-
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
 }

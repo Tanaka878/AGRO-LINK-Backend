@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FarmerServiceImpl implements FarmerService {
@@ -86,7 +88,7 @@ public class FarmerServiceImpl implements FarmerService {
                 .count();
 
         long completedOrders = ordersForFarmer.stream()
-                .filter(o -> o.getStatus() == OrderStatus.COMPLETED)
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED) // use COLLECTED if you want "completed"
                 .count();
 
         long cancelledOrders = ordersForFarmer.stream()
@@ -97,12 +99,23 @@ public class FarmerServiceImpl implements FarmerService {
         statistics.setCompletedOrders(completedOrders);
         statistics.setCancelledOrders(cancelledOrders);
 
-        // You already have listed products logic — keep it
-        List<ListedProductsDTO> listedProducts = listedProductsService.getAllListedProductsWithComments();
+        // Listed products
+        List<ListedProducts> listedProducts = listedProductsService.getProductsByFarmer(email);
         statistics.setListedProducts(listedProducts.size());
 
-        System.out.println("Orders fetched for " + email + ": " + ordersForFarmer.size());
+        // -----------------------------
+        // Top-Selling Products
+        // -----------------------------
+        Map<String, Integer> topSellingProducts = ordersForFarmer.stream()
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED) // only count collected/completed
+                .collect(Collectors.groupingBy(
+                        Order::getProductType,
+                        Collectors.summingInt(Order::getQuantity)
+                ));
 
+        statistics.setTopSellingProducts(topSellingProducts);
+
+        System.out.println("Orders fetched for " + email + ": " + ordersForFarmer.size());
 
         return ResponseEntity.ok(statistics);
     }

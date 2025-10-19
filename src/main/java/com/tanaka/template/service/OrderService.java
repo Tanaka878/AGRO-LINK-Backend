@@ -1,6 +1,7 @@
 package com.tanaka.template.service;
 
 import com.tanaka.template.dto.OrderStatus;
+import com.tanaka.template.dto.PaymentStatus;
 import com.tanaka.template.entity.Order;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface OrderService {
     Order updateOrderStatus(Long orderId, OrderStatus status);
 
     public List<Order> getOrdersByBuyerEmail(String buyerEmail);
+    Order updatePaymentStatus(Long orderId, PaymentStatus paymentStatus);
+    void deleteOrder(Long orderId);
 }

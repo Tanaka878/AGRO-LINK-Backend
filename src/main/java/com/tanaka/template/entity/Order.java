@@ -1,6 +1,7 @@
 package com.tanaka.template.entity;
 
 import com.tanaka.template.dto.OrderStatus;
+import com.tanaka.template.dto.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,10 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status; // PENDING or COLLECTED
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING; // PENDING, PAID, CANCELLED, REFUNDED
 
     private LocalDateTime orderTime = LocalDateTime.now();
 

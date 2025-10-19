@@ -1,6 +1,7 @@
 package com.tanaka.template.serviceImpl;
 
 import com.tanaka.template.dto.OrderStatus;
+import com.tanaka.template.dto.PaymentStatus;
 import com.tanaka.template.entity.Order;
 import com.tanaka.template.repository.OrderRepository;
 import com.tanaka.template.service.OrderService;
@@ -12,11 +13,8 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    //functionality for tracking and cancelling orders;
-
     private final OrderRepository orderRepository;
     private final MailSenderService mailSenderService;
-
 
     public OrderServiceImpl(OrderRepository orderRepository, MailSenderService mailSenderService) {
         this.orderRepository = orderRepository;
@@ -27,7 +25,6 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(Order order) {
         mailSenderService.farmerOrderCreationNotification(order);
         mailSenderService.customerOrderCreationNotification(order);
-
         return orderRepository.save(order);
     }
 
@@ -41,7 +38,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll();
     }
 
-
     @Override
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
@@ -50,8 +46,34 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
+    @Override
+    public Order updatePaymentStatus(Long orderId, PaymentStatus paymentStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+        order.setPaymentStatus(paymentStatus);
+
+        // Optional: Send notification when payment is confirmed
+        if (paymentStatus == PaymentStatus.PAID) {
+            // You can add email notifications here if needed
+            // mailSenderService.paymentConfirmedNotification(order);
+        }
+
+        return orderRepository.save(order);
+    }
+
+    @Override
     public List<Order> getOrdersByBuyerEmail(String buyerEmail) {
         return orderRepository.findByBuyerEmail(buyerEmail);
     }
 
+    @Override
+    public void deleteOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        // Optional: Send notification about order deletion
+        // mailSenderService.orderDeletionNotification(order);
+
+        orderRepository.delete(order);
+    }
 }
