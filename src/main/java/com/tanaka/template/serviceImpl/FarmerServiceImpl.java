@@ -51,7 +51,6 @@ public class FarmerServiceImpl implements FarmerService {
         farmer.setGender(dto.getGender());
         farmer.setRole(Role.FARMER); // force role as FARMER
 
-        // Set Farmer-specific fields
         farmer.setFarmName(dto.getFarmName());
         farmer.setFarmLocation(dto.getFarmLocation());
         farmer.setFarmSize(dto.getFarmSize());

@@ -17,6 +17,7 @@ public class ListedProductsDTO {
     private String productType;
     private Integer quantity;
     private String farmerEmail;
+    private Double price;
 
     private List<String> farmerComments;
 }

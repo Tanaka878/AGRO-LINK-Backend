@@ -22,5 +22,7 @@ public class ListedProducts {
 
     private Integer quantity;
 
+    private Double pricePerUnit;
+
     private String farmerEmail;
 }

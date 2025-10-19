@@ -34,6 +34,7 @@ public class ListedProductsServiceImpl implements ListedProductsService {
             dto.setProductType(product.getProductType());
             dto.setQuantity(product.getQuantity());
             dto.setFarmerEmail(product.getFarmerEmail());
+            dto.setPrice(product.getPricePerUnit());
 
             // Fetch farmer comments
             Optional<Farmer> farmer = farmerRepository.findByEmail(product.getFarmerEmail());
@@ -62,5 +63,12 @@ public class ListedProductsServiceImpl implements ListedProductsService {
     @Override
     public List<ListedProducts> getProductsByFarmer(String farmerEmail) {
         return listedProductsRepository.findByFarmerEmail(farmerEmail);
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        ListedProducts product = listedProductsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+        listedProductsRepository.delete(product);
     }
 }

@@ -16,4 +16,5 @@ public interface ListedProductsService {
     // Get products by a specific farmer
     List<ListedProducts> getProductsByFarmer(String farmerEmail);
     public List<ListedProductsDTO> getAllListedProductsWithComments();
+    public void deleteProduct(Long id);
 }

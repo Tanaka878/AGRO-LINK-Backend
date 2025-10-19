@@ -39,4 +39,11 @@ public class ListedProductsController {
         List<ListedProducts> products = listedProductsService.getProductsByFarmer(email);
         return ResponseEntity.ok(products);
     }
+
+    // Delete a product by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        listedProductsService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }
